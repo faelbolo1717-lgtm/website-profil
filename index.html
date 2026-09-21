@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nama Lengkap Anda — Profil Pribadi</title>
+<meta name="description" content="Website profil pribadi: tentang saya, keahlian, proyek, dan kontak.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   1. TOKEN WARNA & UKURAN
+   Semua warna disimpan di satu tempat. Ubah di sini,
+   seluruh halaman ikut berubah.
+   ============================================================ */
+:root{
+  --paper:#ECEFF3;
+  --surface:#FFFFFF;
+  --ink:#131A2B;
+  --ink-soft:#4E5A72;
+  --blue:#1B3FA0;
+  --blue-soft:#DCE4F7;
+  --amber:#F2A413;
+  --rule:#C7D1DF;
+  --shadow:0 18px 40px -28px rgba(19,26,43,.55);
+
+  --font-display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --font-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --maxw:1080px;
+
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1320; --surface:#161D2E; --ink:#E9EDF6; --ink-soft:#9DAAC2;
+    --blue:#89A4F7; --blue-soft:#1F2B49; --amber:#F2B441; --rule:#2B3552;
+    --shadow:0 18px 40px -28px rgba(0,0,0,.8);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1320; --surface:#161D2E; --ink:#E9EDF6; --ink-soft:#9DAAC2;
+  --blue:#89A4F7; --blue-soft:#1F2B49; --amber:#F2B441; --rule:#2B3552;
+  --shadow:0 18px 40px -28px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:calc(72px + env(safe-area-inset-top,0px))}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:1.0625rem;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:2px}
+
+.wrap{width:min(100% - 2.5rem, var(--maxw));margin-inline:auto}
+
+/* ============================================================
+   2. NAVIGASI ATAS
+   ============================================================ */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  padding-top:env(safe-area-inset-top,0px);
+  background:color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+.topbar__inner{display:flex;align-items:center;gap:1rem;height:72px}
+.mark{
+  font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;
+  font-size:1.05rem;text-decoration:none;color:var(--ink);margin-right:auto;
+  display:flex;align-items:center;gap:.6rem;
+}
+.mark span{
+  width:26px;height:26px;display:grid;place-items:center;background:var(--blue);
+  color:#fff;border-radius:7px;font-size:.8rem;
+}
+:root[data-theme="dark"] .mark span,
+:root:not([data-theme="light"]) .mark span{color:#0E1320}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .mark span{color:#fff}}
+
+.nav{display:flex;gap:.25rem}
+.nav a{
+  font-family:var(--font-display);font-weight:500;font-size:.95rem;
+  text-decoration:none;color:var(--ink-soft);padding:.45rem .7rem;border-radius:8px;
+  transition:color .18s, background .18s;
+}
+.nav a:hover{color:var(--ink);background:var(--blue-soft)}
+.nav a.is-active{color:var(--blue);background:var(--blue-soft)}
+
+.iconbtn{
+  font:inherit;font-family:var(--font-display);font-size:.9rem;
+  background:transparent;border:1px solid var(--rule);color:var(--ink);
+  width:40px;height:40px;border-radius:10px;cursor:pointer;display:grid;place-items:center;
+}
+.iconbtn:hover{border-color:var(--blue);color:var(--blue)}
+.menubtn{display:none}
+
+.drawer{display:none;border-top:1px solid var(--rule);background:var(--surface)}
+.drawer.is-open{display:block}
+.drawer a{
+  display:block;padding:.85rem 0;text-decoration:none;color:var(--ink);
+  font-family:var(--font-display);border-bottom:1px solid var(--rule);
+}
+.drawer a:last-child{border-bottom:0}
+
+@media (max-width:820px){
+  .nav{display:none}
+  .menubtn{display:grid}
+}
+
+/* ============================================================
+   3. HERO
+   ============================================================ */
+.hero{padding:clamp(3rem,9vw,6rem) 0 clamp(3rem,7vw,5rem)}
+.hero__grid{display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(2rem,5vw,4rem);align-items:center}
+.hero__kicker{
+  font-family:var(--font-display);font-weight:500;color:var(--blue);
+  font-size:.98rem;margin:0 0 1rem;
+}
+.hero__kicker::before{
+  content:"";display:inline-block;width:2.2rem;height:2px;background:var(--blue);
+  vertical-align:middle;margin-right:.7rem;
+}
+.hero h1{
+  font-family:var(--font-display);font-weight:800;letter-spacing:-.035em;
+  font-size:clamp(2.6rem,8vw,5.2rem);line-height:.95;margin:0 0 1.2rem;
+}
+.hero p.lede{font-size:1.15rem;color:var(--ink-soft);max-width:52ch;margin:0 0 2rem}
+.actions{display:flex;flex-wrap:wrap;gap:.8rem}
+.btn{
+  font-family:var(--font-display);font-weight:700;font-size:.98rem;
+  padding:.85rem 1.5rem;border-radius:12px;text-decoration:none;cursor:pointer;
+  border:2px solid var(--blue);transition:transform .15s, box-shadow .15s;display:inline-block;
+}
+.btn--solid{background:var(--blue);color:var(--paper)}
+.btn--ghost{background:transparent;color:var(--blue)}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+
+/* Foto dengan bingkai bergeser — elemen paling menonjol di halaman */
+.photo{position:relative;justify-self:center;width:min(300px,78vw);aspect-ratio:4/5}
+.photo__frame{
+  position:absolute;inset:0;border:2px solid var(--amber);border-radius:18px;
+  transform:translate(14px,14px);
+}
+.photo__slot{
+  position:absolute;inset:0;border-radius:18px;background:var(--blue-soft);
+  border:2px solid var(--blue);display:grid;place-content:center;gap:.35rem;
+  text-align:center;color:var(--blue);overflow:hidden;
+}
+.photo__slot strong{font-family:var(--font-display);font-size:1rem}
+.photo__slot small{color:var(--ink-soft);font-size:.82rem;padding-inline:1.5rem}
+
+.facts{
+  margin-top:clamp(2.5rem,6vw,4rem);display:grid;grid-template-columns:repeat(3,1fr);
+  border-top:1px solid var(--rule);
+}
+.facts div{padding:1.25rem 0 0}
+.facts dt{font-family:var(--font-display);font-size:.85rem;color:var(--ink-soft);margin:0 0 .2rem}
+.facts dd{margin:0;font-family:var(--font-display);font-weight:700;font-size:1.35rem;letter-spacing:-.02em}
+
+@media (max-width:820px){
+  .hero__grid{grid-template-columns:1fr}
+  .photo{order:-1;margin-bottom:.5rem}
+  .facts{grid-template-columns:1fr;gap:0}
+  .facts div{border-bottom:1px solid var(--rule);padding-bottom:1rem}
+  .facts div:last-child{border-bottom:0}
+}
+
+/* ============================================================
+   4. KERANGKA SECTION
+   ============================================================ */
+.section{padding:clamp(3.5rem,8vw,6rem) 0;border-top:1px solid var(--rule)}
+.section__head{display:flex;align-items:baseline;gap:1.2rem;margin-bottom:2.5rem}
+.section__head h2{
+  font-family:var(--font-display);font-weight:800;letter-spacing:-.03em;
+  font-size:clamp(1.8rem,4.5vw,2.6rem);margin:0;white-space:nowrap;
+}
+.section__head .line{flex:1;height:1px;background:var(--rule)}
+.section__head .count{font-family:var(--font-display);color:var(--ink-soft);font-size:.9rem}
+
+/* Tentang */
+.about{display:grid;grid-template-columns:1.4fr 1fr;gap:clamp(2rem,5vw,3.5rem)}
+.about p{margin:0 0 1.2rem;max-width:62ch}
+.about p:first-child{font-size:1.2rem}
+.sidecard{
+  background:var(--surface);border:1px solid var(--rule);border-radius:16px;
+  padding:1.5rem;align-self:start;
+}
+.sidecard h3{font-family:var(--font-display);margin:0 0 1rem;font-size:1.05rem}
+.sidecard ul{list-style:none;margin:0;padding:0;font-size:.98rem}
+.sidecard li{display:flex;gap:.8rem;padding:.55rem 0;border-bottom:1px dashed var(--rule)}
+.sidecard li:last-child{border-bottom:0}
+.sidecard li b{font-family:var(--font-display);font-weight:500;color:var(--ink-soft);min-width:6.5rem}
+@media (max-width:820px){.about{grid-template-columns:1fr}}
+
+/* Keahlian */
+.skills{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem 3rem}
+.skill{padding:.4rem 0}
+.skill__top{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--font-display);margin-bottom:.5rem}
+.skill__top b{font-weight:700;font-size:1.02rem}
+.skill__top span{color:var(--ink-soft);font-size:.85rem}
+.bar{height:8px;background:var(--blue-soft);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--blue);border-radius:99px;width:0;transition:width 1s cubic-bezier(.2,.7,.3,1)}
+.tools{margin-top:2.5rem;display:flex;flex-wrap:wrap;gap:.55rem;align-items:center}
+.tools p{margin:0 .6rem 0 0;font-family:var(--font-display);color:var(--ink-soft);font-size:.92rem}
+.chip{
+  font-family:var(--font-display);font-size:.88rem;padding:.35rem .8rem;border-radius:99px;
+  border:1px solid var(--rule);background:var(--surface);
+}
+@media (max-width:640px){.skills{grid-template-columns:1fr}}
+
+/* Proyek */
+.project{
+  display:grid;grid-template-columns:260px 1fr;gap:2rem;
+  padding:2rem 0;border-bottom:1px solid var(--rule);align-items:center;
+}
+.project:first-of-type{padding-top:0}
+.project:last-of-type{border-bottom:0}
+.project__thumb{
+  aspect-ratio:16/10;border-radius:14px;background:var(--blue-soft);
+  border:1px dashed var(--blue);display:grid;place-content:center;text-align:center;
+  color:var(--blue);font-family:var(--font-display);font-size:.9rem;padding:1rem;
+}
+.project h3{font-family:var(--font-display);font-size:1.4rem;letter-spacing:-.02em;margin:0 0 .5rem}
+.project p{margin:0 0 1rem;color:var(--ink-soft);max-width:60ch}
+.project__meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
+.project__links{display:flex;gap:1.2rem;font-family:var(--font-display);font-size:.95rem}
+@media (max-width:820px){.project{grid-template-columns:1fr;gap:1.2rem}}
+
+/* Kontak */
+.contact{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(2rem,5vw,3.5rem)}
+.contact__intro p{color:var(--ink-soft);max-width:44ch}
+.linklist{list-style:none;padding:0;margin:1.5rem 0 0}
+.linklist li{border-top:1px solid var(--rule);padding:.9rem 0}
+.linklist a{font-family:var(--font-display);font-weight:500;text-decoration:none;display:flex;justify-content:space-between;gap:1rem}
+.linklist a:hover{color:var(--amber)}
+.linklist small{color:var(--ink-soft);font-family:var(--font-body)}
+
+form{background:var(--surface);border:1px solid var(--rule);border-radius:16px;padding:1.6rem;box-shadow:var(--shadow)}
+.field{margin-bottom:1.1rem}
+.field label{display:block;font-family:var(--font-display);font-size:.92rem;margin-bottom:.4rem}
+.field input,.field textarea{
+  width:100%;font:inherit;font-size:1rem;padding:.75rem .9rem;color:var(--ink);
+  background:var(--paper);border:1px solid var(--rule);border-radius:10px;
+}
+.field input:focus,.field textarea:focus{border-color:var(--blue);outline:none;box-shadow:0 0 0 3px var(--blue-soft)}
+.field textarea{min-height:130px;resize:vertical}
+.formbtn{width:100%;font-family:var(--font-display);font-weight:700;font-size:1rem;padding:.9rem;border-radius:12px;border:0;background:var(--blue);color:var(--paper);cursor:pointer}
+.formbtn:hover{opacity:.9}
+.status{margin:.9rem 0 0;font-size:.92rem;min-height:1.4rem;color:var(--blue)}
+.status[data-kind="error"]{color:#C2410C}
+@media (max-width:820px){.contact{grid-template-columns:1fr}}
+
+/* Footer */
+footer{border-top:1px solid var(--rule);padding:2rem 0 3rem;color:var(--ink-soft);font-size:.92rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between}
+
+/* Animasi pembuka hero (sekali saja saat halaman dibuka) */
+.reveal{opacity:0;transform:translateY(14px);animation:rise .7s cubic-bezier(.2,.7,.3,1) forwards}
+.reveal:nth-child(2){animation-delay:.08s}
+.reveal:nth-child(3){animation-delay:.16s}
+.reveal:nth-child(4){animation-delay:.24s}
+@keyframes rise{to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<!-- ============ NAVIGASI ============ -->
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <a class="mark" href="#hero"><span>NA</span>Nama Anda</a>
+    <nav class="nav" id="nav">
+      <a href="#tentang">Tentang</a>
+      <a href="#keahlian">Keahlian</a>
+      <a href="#proyek">Proyek</a>
+      <a href="#kontak">Kontak</a>
+    </nav>
+    <button class="iconbtn" id="themeBtn" aria-label="Ganti mode terang atau gelap" title="Mode terang / gelap">◐</button>
+    <button class="iconbtn menubtn" id="menuBtn" aria-label="Buka menu" aria-expanded="false" aria-controls="drawer">☰</button>
+  </div>
+  <div class="drawer" id="drawer">
+    <div class="wrap">
+      <a href="#tentang">Tentang</a>
+      <a href="#keahlian">Keahlian</a>
+      <a href="#proyek">Proyek</a>
+      <a href="#kontak">Kontak</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="hero">
+    <div class="wrap hero__grid">
+      <div>
+        <p class="hero__kicker reveal">Pelajar pemrograman · Pekanbaru, Riau</p>
+        <h1 class="reveal">Nama Lengkap Anda</h1>
+        <p class="lede reveal">Saya sedang belajar membangun website dari nol dengan HTML, CSS, dan JavaScript. Halaman ini adalah tempat saya menyimpan apa yang sudah saya pelajari dan buat.</p>
+        <div class="actions reveal">
+          <a class="btn btn--solid" href="#proyek">Lihat proyek saya</a>
+          <a class="btn btn--ghost" href="#kontak">Hubungi saya</a>
+        </div>
+      </div>
+      <div class="photo">
+        <div class="photo__frame" aria-hidden="true"></div>
+        <div class="photo__slot">
+          <strong>Foto Anda</strong>
+          <small>Ganti bagian ini dengan foto ukuran potret (4:5)</small>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <dl class="facts">
+        <div><dt>Fokus belajar</dt><dd>Web Front-End</dd></div>
+        <div><dt>Mulai belajar</dt><dd>Tahun 2026</dd></div>
+        <div><dt>Status</dt><dd>Terbuka untuk proyek</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ============ TENTANG ============ -->
+  <section class="section" id="tentang">
+    <div class="wrap">
+      <div class="section__head"><h2>Tentang saya</h2><div class="line"></div><span class="count">01</span></div>
+      <div class="about">
+        <div>
+          <p>Halo, saya <strong>Nama Lengkap Anda</strong>. Saya baru memulai perjalanan di dunia pemrograman dan paling senang ketika sebuah ide sederhana berubah menjadi halaman yang benar-benar bisa dibuka orang lain.</p>
+          <p>Ganti paragraf ini dengan cerita Anda sendiri: latar belakang pendidikan atau pekerjaan, alasan mulai belajar coding, dan hal apa yang sedang Anda dalami sekarang. Dua sampai tiga paragraf sudah cukup — pengunjung biasanya membaca cepat.</p>
+          <p>Di luar layar, saya suka menulis catatan belajar, membaca dokumentasi, dan mencoba membongkar tampilan website yang menarik untuk tahu cara kerjanya.</p>
+        </div>
+        <div class="sidecard">
+          <h3>Data singkat</h3>
+          <ul>
+            <li><b>Nama</b><span>Nama Lengkap Anda</span></li>
+            <li><b>Lokasi</b><span>Kota, Provinsi</span></li>
+            <li><b>Pendidikan</b><span>Nama sekolah/kampus</span></li>
+            <li><b>Email</b><span>email@contoh.com</span></li>
+            <li><b>Bahasa</b><span>Indonesia, Inggris</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ KEAHLIAN ============ -->
+  <section class="section" id="keahlian">
+    <div class="wrap">
+      <div class="section__head"><h2>Keahlian</h2><div class="line"></div><span class="count">02</span></div>
+      <div class="skills">
+        <div class="skill"><div class="skill__top"><b>HTML</b><span>Dasar kuat</span></div><div class="bar"><i data-level="80"></i></div></div>
+        <div class="skill"><div class="skill__top"><b>CSS</b><span>Sedang didalami</span></div><div class="bar"><i data-level="70"></i></div></div>
+        <div class="skill"><div class="skill__top"><b>JavaScript</b><span>Tahap belajar</span></div><div class="bar"><i data-level="55"></i></div></div>
+        <div class="skill"><div class="skill__top"><b>Desain antarmuka</b><span>Tahap belajar</span></div><div class="bar"><i data-level="50"></i></div></div>
+        <div class="skill"><div class="skill__top"><b>Git &amp; GitHub</b><span>Dasar</span></div><div class="bar"><i data-level="45"></i></div></div>
+        <div class="skill"><div class="skill__top"><b>Microsoft Office</b><span>Terbiasa</span></div><div class="bar"><i data-level="85"></i></div></div>
+      </div>
+      <div class="tools">
+        <p>Alat yang saya pakai:</p>
+        <span class="chip">VS Code</span>
+        <span class="chip">Google Chrome</span>
+        <span class="chip">Windows 11</span>
+        <span class="chip">Canva</span>
+        <span class="chip">Figma</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROYEK ============ -->
+  <section class="section" id="proyek">
+    <div class="wrap">
+      <div class="section__head"><h2>Proyek</h2><div class="line"></div><span class="count">03</span></div>
+
+      <article class="project">
+        <div class="project__thumb">Gambar proyek 1<br>(1280 × 800 px)</div>
+        <div>
+          <h3>Judul Proyek Pertama</h3>
+          <p>Jelaskan dalam 2–3 kalimat: masalah apa yang diselesaikan, apa yang Anda kerjakan sendiri, dan hal baru apa yang Anda pelajari saat membuatnya.</p>
+          <div class="project__meta"><span class="chip">HTML</span><span class="chip">CSS</span></div>
+          <div class="project__links"><a href="#">Lihat demo</a><a href="#">Kode sumber</a></div>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project__thumb">Gambar proyek 2<br>(1280 × 800 px)</div>
+        <div>
+          <h3>Judul Proyek Kedua</h3>
+          <p>Ganti teks ini dengan penjelasan proyek Anda. Kalau proyeknya masih latihan dari tutorial, tidak masalah — tulis saja bagian mana yang Anda ubah atau tambahkan sendiri.</p>
+          <div class="project__meta"><span class="chip">JavaScript</span><span class="chip">Responsif</span></div>
+          <div class="project__links"><a href="#">Lihat demo</a><a href="#">Kode sumber</a></div>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project__thumb">Gambar proyek 3<br>(1280 × 800 px)</div>
+        <div>
+          <h3>Judul Proyek Ketiga</h3>
+          <p>Kalau Anda belum punya tiga proyek, hapus saja blok ini. Lebih baik menampilkan satu proyek yang dijelaskan dengan baik daripada tiga yang kosong.</p>
+          <div class="project__meta"><span class="chip">Belajar</span></div>
+          <div class="project__links"><a href="#">Lihat demo</a><a href="#">Kode sumber</a></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ KONTAK ============ -->
+  <section class="section" id="kontak">
+    <div class="wrap">
+      <div class="section__head"><h2>Kontak</h2><div class="line"></div><span class="count">04</span></div>
+      <div class="contact">
+        <div class="contact__intro">
+          <p>Terbuka untuk proyek kecil, kerja sama belajar, atau sekadar bertukar catatan. Saya biasanya membalas dalam satu hari.</p>
+          <ul class="linklist">
+            <li><a href="mailto:email@contoh.com">Email<small>email@contoh.com</small></a></li>
+            <li><a href="https://wa.me/628123456789">WhatsApp<small>+62 812-3456-789</small></a></li>
+            <li><a href="https://github.com/namaanda">GitHub<small>@namaanda</small></a></li>
+            <li><a href="https://instagram.com/namaanda">Instagram<small>@namaanda</small></a></li>
+          </ul>
+        </div>
+
+        <form id="kontakForm" novalidate>
+          <div class="field">
+            <label for="nama">Nama</label>
+            <input id="nama" name="nama" type="text" placeholder="Siapa nama Anda?" required>
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="nama@email.com" required>
+          </div>
+          <div class="field">
+            <label for="pesan">Pesan</label>
+            <textarea id="pesan" name="pesan" placeholder="Tulis pesan Anda di sini" required></textarea>
+          </div>
+          <button class="formbtn" type="submit">Kirim pesan</button>
+          <p class="status" id="status" role="status"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="tahun">2026</span> Nama Lengkap Anda</span>
+    <span>Dibuat sendiri dengan HTML, CSS, dan JavaScript</span>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   JAVASCRIPT — bagian yang membuat halaman "hidup"
+   ============================================================ */
+
+/* 1. Tahun di footer terisi otomatis, jadi tidak perlu diubah tiap tahun. */
+document.getElementById('tahun').textContent = new Date().getFullYear();
+
+/* 2. Menu untuk layar HP: tombol ☰ membuka dan menutup daftar menu. */
+const menuBtn = document.getElementById('menuBtn');
+const drawer  = document.getElementById('drawer');
+menuBtn.addEventListener('click', () => {
+  const open = drawer.classList.toggle('is-open');
+  menuBtn.setAttribute('aria-expanded', open);
+  menuBtn.textContent = open ? '✕' : '☰';
+});
+drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  drawer.classList.remove('is-open');
+  menuBtn.setAttribute('aria-expanded', 'false');
+  menuBtn.textContent = '☰';
+}));
+
+/* 3. Tombol ◐ mengganti mode terang/gelap, dan pilihannya diingat
+      di browser pengunjung itu sendiri. */
+const themeBtn = document.getElementById('themeBtn');
+try {
+  const tersimpan = localStorage.getItem('tema');
+  if (tersimpan) document.documentElement.setAttribute('data-theme', tersimpan);
+} catch (e) { /* kalau browser melarang penyimpanan, halaman tetap jalan normal */ }
+
+themeBtn.addEventListener('click', () => {
+  const sekarang = document.documentElement.getAttribute('data-theme');
+  const gelapDariSistem = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const aktif = sekarang || (gelapDariSistem ? 'dark' : 'light');
+  const baru  = aktif === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', baru);
+  try { localStorage.setItem('tema', baru); } catch (e) {}
+});
+
+/* 4. Batang keahlian baru terisi saat bagian Keahlian terlihat di layar. */
+const batang = document.querySelectorAll('.bar i');
+const pengamatBatang = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.width = entry.target.dataset.level + '%';
+      pengamatBatang.unobserve(entry.target);
+    }
+  });
+}, { threshold: .4 });
+batang.forEach(b => pengamatBatang.observe(b));
+
+/* 5. Menu atas menandai bagian yang sedang dibaca. */
+const tautanNav = document.querySelectorAll('#nav a');
+const bagian = document.querySelectorAll('main section[id]');
+const pengamatBagian = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    tautanNav.forEach(a => a.classList.toggle('is-active', a.getAttribute('href') === '#' + entry.target.id));
+  });
+}, { rootMargin: '-45% 0px -50% 0px' });
+bagian.forEach(s => pengamatBagian.observe(s));
+
+/* 6. Formulir kontak. Halaman ini tidak punya server, jadi isian
+      formulir disusun menjadi sebuah email dan dibuka di aplikasi
+      email pengunjung. Ganti ALAMAT_EMAIL dengan email Anda. */
+const ALAMAT_EMAIL = 'email@contoh.com';
+const form = document.getElementById('kontakForm');
+const status = document.getElementById('status');
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const nama  = form.nama.value.trim();
+  const email = form.email.value.trim();
+  const pesan = form.pesan.value.trim();
+
+  if (!nama || !email || !pesan) {
+    status.dataset.kind = 'error';
+    status.textContent = 'Lengkapi nama, email, dan pesan dulu ya.';
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    status.dataset.kind = 'error';
+    status.textContent = 'Format email belum benar. Contoh: nama@email.com';
+    return;
+  }
+
+  const subjek = encodeURIComponent('Pesan dari ' + nama + ' lewat website');
+  const isi = encodeURIComponent(pesan + '\n\n---\nDari: ' + nama + '\nEmail: ' + email);
+  window.location.href = 'mailto:' + ALAMAT_EMAIL + '?subject=' + subjek + '&body=' + isi;
+
+  status.dataset.kind = 'ok';
+  status.textContent = 'Aplikasi email Anda akan terbuka dengan pesan yang sudah terisi.';
+  form.reset();
+});
+</script>
+</body>
+</html>
